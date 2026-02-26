@@ -1,48 +1,931 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mi Proyecto</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f0f4ff;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EarthSync — Tu Impacto, Tu Cambio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #0d3b2e;
+    --green-mid: #1a5c44;
+    --green-bright: #2d9e6b;
+    --green-light: #4ecca3;
+    --green-glow: #7fffd4;
+    --blue-deep: #0a1628;
+    --blue-mid: #0e3460;
+    --blue-bright: #1565c0;
+    --blue-accent: #29b6f6;
+    --blue-light: #81d4fa;
+    --cream: #f0faf5;
+    --text-main: #e8f5f0;
+    --text-muted: #8abfaa;
+  }
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 40px 60px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      text-align: center;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    h1 {
-      font-size: 2.5rem;
-      color: #3b82f6;
-      margin-bottom: 8px;
-    }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--blue-deep);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-    p {
-      color: #6b7280;
-      font-size: 1.1rem;
-    }
-  </style>
+  /* BG MESH */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(13,59,46,0.7) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(21,101,192,0.5) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(45,158,107,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 0; border-bottom: 1px solid rgba(78,204,163,0.15);
+    position: relative; z-index: 1;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--green-light), var(--blue-accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  .logo span { font-weight: 400; }
+  .nav-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
+  .nav-tab {
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    border: none; background: transparent; color: var(--text-muted);
+    transition: all 0.25s ease;
+  }
+  .nav-tab.active {
+    background: linear-gradient(135deg, var(--green-mid), var(--blue-mid));
+    color: white;
+  }
+  .nav-tab:hover:not(.active) { color: var(--text-main); background: rgba(255,255,255,0.06); }
+
+  /* SECTIONS */
+  .section { display: none; padding: 40px 0 80px; animation: fadeUp 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HERO */
+  .hero { text-align: center; padding: 60px 0 40px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(78,204,163,0.1); border: 1px solid rgba(78,204,163,0.25);
+    border-radius: 100px; padding: 6px 16px; font-size: 0.8rem;
+    color: var(--green-light); margin-bottom: 24px;
+  }
+  .hero-badge::before { content: '🌍'; font-size: 1rem; }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(135deg, var(--green-light) 0%, var(--blue-accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { font-size: 1.05rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 32px; line-height: 1.7; }
+
+  /* SCORE RING */
+  .score-section { display: flex; gap: 32px; align-items: flex-start; margin: 40px 0; flex-wrap: wrap; }
+  .score-card {
+    flex: 0 0 auto; width: 220px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(78,204,163,0.15);
+    border-radius: 24px; padding: 28px; text-align: center;
+  }
+  .ring-wrap { position: relative; width: 140px; height: 140px; margin: 0 auto 16px; }
+  .ring-svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 10; }
+  .ring-fill {
+    fill: none; stroke-width: 10; stroke-linecap: round;
+    stroke-dasharray: 376; stroke-dashoffset: 376;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .ring-fill.green { stroke: url(#greenGrad); }
+  .ring-fill.yellow { stroke: #ffc107; }
+  .ring-fill.red { stroke: #ef5350; }
+  .ring-label {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    text-align: center;
+  }
+  .ring-num { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; line-height: 1; }
+  .ring-unit { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+  .score-label { font-size: 0.85rem; color: var(--text-muted); }
+  .score-badge {
+    display: inline-block; margin-top: 8px; padding: 4px 12px;
+    border-radius: 100px; font-size: 0.75rem; font-weight: 600;
+  }
+  .badge-good { background: rgba(78,204,163,0.15); color: var(--green-light); }
+  .badge-mid { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .badge-bad { background: rgba(239,83,80,0.15); color: #ef5350; }
+
+  /* CALCULATOR */
+  .calc-area { flex: 1; min-width: 280px; }
+  .calc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; }
+  .calc-group { margin-bottom: 20px; }
+  .calc-group label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;
+  }
+  .calc-group label .ico { font-size: 1rem; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  input[type=range] {
+    flex: 1; -webkit-appearance: none; height: 6px;
+    background: rgba(255,255,255,0.1); border-radius: 3px; outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-light), var(--blue-accent));
+    cursor: pointer; box-shadow: 0 0 12px rgba(78,204,163,0.4);
+  }
+  .slider-val {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+    color: var(--green-light); min-width: 48px; text-align: right;
+  }
+  .calc-btn {
+    margin-top: 8px; width: 100%;
+    background: linear-gradient(135deg, var(--green-bright), var(--blue-bright));
+    border: none; border-radius: 14px; padding: 14px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+    color: white; cursor: pointer; letter-spacing: 0.02em;
+    box-shadow: 0 8px 32px rgba(45,158,107,0.3);
+    transition: all 0.2s ease; position: relative; overflow: hidden;
+  }
+  .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(45,158,107,0.45); }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* BREAKDOWN BARS */
+  .breakdown { margin-top: 32px; }
+  .breakdown-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 16px; color: var(--text-muted); }
+  .bar-item { margin-bottom: 14px; }
+  .bar-meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; }
+  .bar-name { color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+  .bar-pct { color: var(--text-muted); font-family: 'Syne', sans-serif; }
+  .bar-track { height: 8px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* TIPS */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 8px; }
+  .tip-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(78,204,163,0.12);
+    border-radius: 20px; padding: 22px; transition: all 0.25s ease; cursor: default;
+    position: relative; overflow: hidden;
+  }
+  .tip-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--green-bright), var(--blue-accent));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease;
+  }
+  .tip-card:hover { border-color: rgba(78,204,163,0.3); transform: translateY(-3px); }
+  .tip-card:hover::before { transform: scaleX(1); }
+  .tip-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+  .tip-tag {
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--green-light); margin-bottom: 8px;
+  }
+  .tip-card h4 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+  .tip-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .tip-impact {
+    display: flex; align-items: center; gap: 6px; margin-top: 12px;
+    font-size: 0.78rem; color: var(--green-light);
+  }
+  .tip-impact::before { content: '↓'; font-weight: 700; }
+
+  .section-header { margin-bottom: 32px; }
+  .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
+  .section-header p { color: var(--text-muted); margin-top: 6px; font-size: 0.9rem; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 100px; border: 1px solid rgba(78,204,163,0.2);
+    background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover { background: rgba(78,204,163,0.1); color: var(--green-light); border-color: rgba(78,204,163,0.4); }
+
+  /* RETOS */
+  .retos-grid { display: flex; flex-direction: column; gap: 14px; }
+  .reto-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(78,204,163,0.12);
+    border-radius: 20px; padding: 20px 24px; display: flex; align-items: center; gap: 20px;
+    transition: all 0.25s ease; cursor: pointer;
+  }
+  .reto-card:hover { border-color: rgba(78,204,163,0.3); transform: translateX(4px); }
+  .reto-card.completed {
+    background: rgba(78,204,163,0.07); border-color: rgba(78,204,163,0.3);
+  }
+  .reto-icon-wrap {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+  }
+  .ico-daily { background: rgba(78,204,163,0.15); }
+  .ico-weekly { background: rgba(41,182,246,0.15); }
+  .reto-body { flex: 1; }
+  .reto-type { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .type-daily { color: var(--green-light); }
+  .type-weekly { color: var(--blue-accent); }
+  .reto-body h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .reto-body p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+  .reto-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .reto-pts {
+    font-size: 0.78rem; color: var(--green-light); font-weight: 600;
+    background: rgba(78,204,163,0.1); padding: 2px 10px; border-radius: 100px;
+  }
+  .reto-xp { font-size: 0.78rem; color: var(--text-muted); }
+  .reto-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .progress-ring { position: relative; width: 48px; height: 48px; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring .pr-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 3; }
+  .progress-ring .pr-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 125.6; transition: stroke-dashoffset 0.8s ease; }
+  .progress-ring .pr-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; font-family: 'Syne', sans-serif; }
+  .check-btn {
+    padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+    transition: all 0.2s;
+  }
+  .check-btn.pending { background: rgba(78,204,163,0.12); color: var(--green-light); }
+  .check-btn.done { background: rgba(78,204,163,0.25); color: var(--green-light); }
+  .check-btn:hover { transform: scale(1.04); }
+
+  /* STREAKS */
+  .streak-bar {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(78,204,163,0.12);
+    border-radius: 20px; padding: 20px 28px; display: flex; align-items: center;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+  }
+  .streak-item { text-align: center; }
+  .streak-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--green-light), var(--blue-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .streak-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .streak-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.08); flex-shrink:0; }
+
+  /* DAY SELECTOR */
+  .day-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+  .day-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 14px; border-radius: 14px; cursor: pointer;
+    border: 1px solid rgba(78,204,163,0.12); background: rgba(255,255,255,0.03);
+    transition: all 0.2s; min-width: 52px;
+  }
+  .day-btn:hover { border-color: rgba(78,204,163,0.3); background: rgba(78,204,163,0.06); }
+  .day-btn.selected { background: rgba(78,204,163,0.12); border-color: rgba(78,204,163,0.45); }
+  .day-btn.today .day-name { color: var(--green-light); }
+  .day-name { font-family:'Syne',sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; color: var(--text-muted); text-transform: uppercase; }
+  .day-num { font-family:'Syne',sans-serif; font-size: 1rem; font-weight: 800; color: var(--text-main); }
+  .day-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+  .day-dot.has-progress { background: var(--green-light); }
+  .day-dot.completed { background: linear-gradient(135deg, var(--green-bright), var(--blue-accent)); }
+
+  /* RETOS */
+  .retos-section-title {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
+    margin: 24px 0 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .retos-section-title::after { content:''; flex:1; height:1px; background: rgba(255,255,255,0.07); }
+  .retos-grid { display: flex; flex-direction: column; gap: 12px; }
+  .reto-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(78,204,163,0.12);
+    border-radius: 20px; padding: 18px 20px; display: flex; align-items: center; gap: 16px;
+    transition: all 0.25s ease;
+  }
+  .reto-card:hover { border-color: rgba(78,204,163,0.25); }
+  .reto-card.completed-card { background: rgba(78,204,163,0.07); border-color: rgba(78,204,163,0.3); }
+  .reto-icon-wrap {
+    width: 48px; height: 48px; border-radius: 13px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  }
+  .ico-daily { background: rgba(78,204,163,0.15); }
+  .ico-weekly { background: rgba(41,182,246,0.15); }
+  .reto-body { flex: 1; min-width: 0; }
+  .reto-type { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .type-daily { color: var(--green-light); }
+  .type-weekly { color: var(--blue-accent); }
+  .reto-body h4 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
+  .reto-body p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+  .reto-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .reto-pts { font-size: 0.75rem; color: var(--green-light); font-weight: 600; background: rgba(78,204,163,0.1); padding: 2px 10px; border-radius: 100px; }
+  .reto-progress-text { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* RIGHT SIDE OF RETO */
+  .reto-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .step-counter { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .step-btns { display: flex; align-items: center; gap: 8px; }
+  .step-btn {
+    width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; line-height: 1;
+  }
+  .step-minus { background: rgba(255,255,255,0.07); color: var(--text-muted); }
+  .step-minus:hover { background: rgba(239,83,80,0.2); color: #ef5350; }
+  .step-plus { background: rgba(78,204,163,0.15); color: var(--green-light); }
+  .step-plus:hover { background: rgba(78,204,163,0.3); }
+  .step-plus:disabled { opacity: 0.3; cursor: not-allowed; }
+  .step-val { font-family:'Syne',sans-serif; font-size: 1rem; font-weight: 800; min-width: 28px; text-align: center; }
+  .step-total { font-size: 0.7rem; color: var(--text-muted); }
+
+  /* MINI PROGRESS BAR inside reto */
+  .reto-bar-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; margin-top: 6px; overflow:hidden; }
+  .reto-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+  /* PAST DAY VIEW */
+  .past-day-notice {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 14px 18px; font-size: 0.83rem; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .past-day-notice .ico { font-size: 1.1rem; }
+
+  /* WEEKLY MINI PROGRESS DOTS */
+  .weekly-dots-row { display: flex; gap: 4px; margin-top: 4px; }
+  .wdot { width: 8px; height: 8px; border-radius: 2px; background: rgba(255,255,255,0.1); }
+  .wdot.filled { background: var(--blue-accent); }
+  .wdot.done-all { background: var(--green-light); }
+</style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ecca3"/>
+      <stop offset="100%" style="stop-color:#29b6f6"/>
+    </linearGradient>
+  </defs>
+</svg>
 
-  <div class="card">
-    <!-- 👇 CAMBIA ESTE TEXTO POR EL NOMBRE DE TU PROYECTO -->
-    <h1>Mi Proyecto</h1>
-    <p>Hecho por: Tu Nombre</p>
+<div class="container">
+  <nav>
+    <div class="logo">Earth<span>Sync</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('huella')">🌍 Mi Huella</button>
+      <button class="nav-tab" onclick="showSection('tips')">💡 Tips</button>
+      <button class="nav-tab" onclick="showSection('retos')">🏆 Retos</button>
+    </div>
+  </nav>
+
+  <!-- SECTION: HUELLA -->
+  <div class="section active" id="sec-huella">
+    <div class="hero">
+      <div class="hero-badge">Calcula tu impacto hoy</div>
+      <h1>Tu <span class="accent">huella de carbono</span><br>en segundos</h1>
+      <p>Ajusta tus hábitos diarios y descubre cuánto CO₂ generas. Cada pequeño cambio cuenta.</p>
+    </div>
+
+    <div class="score-section">
+      <div class="score-card">
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 140 140">
+            <circle class="ring-bg" cx="70" cy="70" r="60"/>
+            <circle class="ring-fill green" id="mainRing" cx="70" cy="70" r="60"/>
+          </svg>
+          <div class="ring-label">
+            <div class="ring-num" id="scoreNum">0</div>
+            <div class="ring-unit">ton CO₂/año</div>
+          </div>
+        </div>
+        <div class="score-label">Tu huella anual</div>
+        <div class="score-badge badge-good" id="scoreBadge">Calculando...</div>
+      </div>
+
+      <div class="calc-area">
+        <div class="calc-title">Configura tus hábitos</div>
+
+        <div class="calc-group">
+          <label><span class="ico">🚗</span> Km en auto por semana</label>
+          <div class="slider-row">
+            <input type="range" id="sl-auto" min="0" max="800" value="200" oninput="calcFootprint()">
+            <span class="slider-val" id="val-auto">200 km</span>
+          </div>
+        </div>
+
+        <div class="calc-group">
+          <label><span class="ico">✈️</span> Vuelos al año</label>
+          <div class="slider-row">
+            <input type="range" id="sl-vuelos" min="0" max="20" value="2" oninput="calcFootprint()">
+            <span class="slider-val" id="val-vuelos">2 vuelos</span>
+          </div>
+        </div>
+
+        <div class="calc-group">
+          <label><span class="ico">🥩</span> Comidas con carne a la semana</label>
+          <div class="slider-row">
+            <input type="range" id="sl-carne" min="0" max="21" value="7" oninput="calcFootprint()">
+            <span class="slider-val" id="val-carne">7 comidas</span>
+          </div>
+        </div>
+
+        <div class="calc-group">
+          <label><span class="ico">⚡</span> kWh eléctricos mensuales</label>
+          <div class="slider-row">
+            <input type="range" id="sl-energia" min="0" max="1000" value="300" oninput="calcFootprint()">
+            <span class="slider-val" id="val-energia">300 kWh</span>
+          </div>
+        </div>
+
+        <div class="calc-group">
+          <label><span class="ico">🛍️</span> Compras en línea al mes</label>
+          <div class="slider-row">
+            <input type="range" id="sl-compras" min="0" max="30" value="5" oninput="calcFootprint()">
+            <span class="slider-val" id="val-compras">5 paquetes</span>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcFootprint(true)">⟳ Actualizar mi huella</button>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="breakdown-title">DESGLOSE POR CATEGORÍA</div>
+      <div id="bars-container"></div>
+    </div>
   </div>
 
+  <!-- SECTION: TIPS -->
+  <div class="section" id="sec-tips">
+    <div class="section-header">
+      <h2>Tips para reducir<br>tu huella 🌿</h2>
+      <p>Acciones concretas ordenadas por impacto real en CO₂.</p>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterTips('all', this)">Todos</button>
+        <button class="filter-btn" onclick="filterTips('transporte', this)">🚗 Transporte</button>
+        <button class="filter-btn" onclick="filterTips('alimentacion', this)">🥦 Alimentación</button>
+        <button class="filter-btn" onclick="filterTips('hogar', this)">🏠 Hogar</button>
+        <button class="filter-btn" onclick="filterTips('consumo', this)">🛍️ Consumo</button>
+      </div>
+    </div>
+    <div class="tips-grid" id="tips-grid"></div>
+  </div>
+
+  <!-- SECTION: RETOS -->
+  <div class="section" id="sec-retos">
+    <div class="section-header">
+      <h2>Retos diarios y<br>semanales 🏆</h2>
+      <p>Completa retos y reduce tu impacto paso a paso.</p>
+    </div>
+
+    <div class="streak-bar">
+      <div class="streak-item">
+        <div class="streak-num" id="streak-count">0</div>
+        <div class="streak-label">Racha 🔥</div>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-item">
+        <div class="streak-num" id="completed-count">0</div>
+        <div class="streak-label">Completados hoy</div>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-item">
+        <div class="streak-num" id="points-count">0</div>
+        <div class="streak-label">SyncPuntos</div>
+      </div>
+    </div>
+
+    <!-- Day selector -->
+    <div class="day-selector" id="day-selector"></div>
+
+    <!-- Retos for selected day -->
+    <div id="retos-content"></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const TIPS_DATA = [
+  { cat:'transporte', icon:'🚲', tag:'TRANSPORTE', title:'Cambia el auto por bicicleta', desc:'Usar bicicleta para trayectos menores a 5 km elimina casi toda la emisión de ese viaje.', impact:'Ahorra hasta 1.2 ton CO₂/año' },
+  { cat:'transporte', icon:'🚌', tag:'TRANSPORTE', title:'Usa transporte público', desc:'El metro y autobús reparten las emisiones entre cientos de pasajeros, reduciendo tu huella por viaje hasta un 90%.', impact:'Ahorra 2.4 ton CO₂/año' },
+  { cat:'transporte', icon:'✈️', tag:'TRANSPORTE', title:'Compensa tus vuelos', desc:'Cada vuelo de larga distancia emite entre 1 y 3 toneladas de CO₂. Opta por trenes o compensa con programas certificados.', impact:'Hasta 3 ton CO₂ por vuelo' },
+  { cat:'transporte', icon:'🚗', tag:'TRANSPORTE', title:'Carpooling inteligente', desc:'Compartir auto con 2 personas reduce tu emisión personal a la mitad. Apps como BlaBlaCar o grupos de WhatsApp lo hacen fácil.', impact:'Ahorra 0.8 ton CO₂/año' },
+  { cat:'alimentacion', icon:'🥦', tag:'ALIMENTACIÓN', title:'Reduce la carne roja', desc:'La producción de 1 kg de carne de res genera hasta 27 kg de CO₂. Sustituirla 3 veces a la semana marca una gran diferencia.', impact:'Ahorra 0.6 ton CO₂/año' },
+  { cat:'alimentacion', icon:'🌿', tag:'ALIMENTACIÓN', title:'Compra local y de temporada', desc:'Los alimentos viajan miles de kilómetros antes de llegar a tu plato. Mercados locales reducen esa cadena logística.', impact:'Ahorra 0.2 ton CO₂/año' },
+  { cat:'alimentacion', icon:'♻️', tag:'ALIMENTACIÓN', title:'Reduce el desperdicio alimentario', desc:'El 30% de los alimentos se desperdician. Planifica tus compras y composatea los residuos orgánicos.', impact:'Ahorra 0.3 ton CO₂/año' },
+  { cat:'hogar', icon:'💡', tag:'HOGAR', title:'Cambia a focos LED', desc:'Los LEDs consumen hasta 80% menos energía que los focos incandescentes y duran 25 veces más.', impact:'Ahorra 0.15 ton CO₂/año' },
+  { cat:'hogar', icon:'🌡️', tag:'HOGAR', title:'Ajusta el termostato 2°C', desc:'Bajar el clima 2 grados reduce el consumo energético hasta un 10%. En invierno, un suéter puede ser tu aliado.', impact:'Ahorra 0.25 ton CO₂/año' },
+  { cat:'hogar', icon:'☀️', tag:'HOGAR', title:'Considera energía solar', desc:'Los paneles solares pueden cubrir del 50-100% del consumo eléctrico de un hogar y se pagan en 5-7 años.', impact:'Ahorra 1.5 ton CO₂/año' },
+  { cat:'consumo', icon:'👕', tag:'CONSUMO', title:'Compra ropa de segunda mano', desc:'La industria textil es la segunda más contaminante. Thrift stores y apps de ropa usada alargan la vida útil de las prendas.', impact:'Ahorra 0.2 ton CO₂/año' },
+  { cat:'consumo', icon:'📱', tag:'CONSUMO', title:'Repara antes de desechar', desc:'Fabricar un smartphone nuevo emite 70 kg de CO₂. Repararlo o utilizarlo 2 años más marca la diferencia.', impact:'Ahorra 0.07 ton CO₂/unidad' },
+];
+
+const RETOS_DATA = [
+  // Daily pool – rotates by day of week (0=Sun…6=Sat)
+  { type:'daily', icon:'🚶', title:'Camina o pedalea hoy', desc:'Realiza un trayecto corto sin usar motor. Incluso 10 minutos cuentan.', pts:20, id:'d1' },
+  { type:'daily', icon:'🌱', title:'Comida sin carne', desc:'Prepara al menos una comida 100% vegetal hoy.', pts:25, id:'d2' },
+  { type:'daily', icon:'💧', title:'Ducha de 5 minutos', desc:'Reduce tu ducha a máximo 5 minutos. Ahorra 40 litros.', pts:15, id:'d3' },
+  { type:'daily', icon:'🛍️', title:'Bolsa reutilizable', desc:'Sal sin aceptar bolsas de plástico de un solo uso.', pts:10, id:'d4' },
+  { type:'daily', icon:'📵', title:'1 hora sin pantallas', desc:'Desconéctate 1 hora: consume menos energía y cuidas tu mente.', pts:15, id:'d5' },
+  { type:'daily', icon:'🌿', title:'Recoge basura del suelo', desc:'Recoge al menos 3 residuos en la calle o parque hoy.', pts:20, id:'d6' },
+  { type:'daily', icon:'🥤', title:'Usa botella reutilizable', desc:'Evita comprar bebidas en envase de plástico de un solo uso hoy.', pts:10, id:'d7' },
+  // Weekly – siempre visibles, con progreso acumulado (total > 1)
+  { type:'weekly', icon:'🚌', title:'5 días en transporte público', desc:'Evita el auto y usa metro, autobús o bicicleta durante la semana.', pts:80, id:'w1', total:5 },
+  { type:'weekly', icon:'♻️', title:'Clasifica tu basura 7 días', desc:'Separa orgánico, reciclable y no reciclable todos los días.', pts:60, id:'w2', total:7 },
+  { type:'weekly', icon:'🥗', title:'3 comidas vegetarianas', desc:'Incorpora 3 comidas sin carne en tu semana. Explora nuevas recetas.', pts:70, id:'w3', total:3 },
+  { type:'weekly', icon:'🌳', title:'Planta o adopta un árbol', desc:'Únete a una iniciativa de reforestación local.', pts:100, id:'w4', total:1 },
+];
+
+// Daily reto pool rotation: 3 different dailies per day (index by weekday)
+const DAILY_ROTATION = [
+  ['d1','d2','d3'],  // Dom
+  ['d4','d5','d6'],  // Lun
+  ['d7','d1','d2'],  // Mar
+  ['d3','d4','d5'],  // Mié
+  ['d6','d7','d1'],  // Jue
+  ['d2','d3','d4'],  // Vie
+  ['d5','d6','d7'],  // Sáb
+];
+
+// ===== STATE =====
+// state[dateKey] = { daily: { id: steps }, weekly: { id: steps } }
+const state = {};
+let selectedDateKey = null;
+
+function getToday() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function getWeekStart() {
+  const d = new Date();
+  const day = d.getDay(); // 0=sun
+  const diff = d.getDate() - day;
+  const mon = new Date(d.setDate(diff));
+  return `${mon.getFullYear()}-${mon.getMonth()+1}-${mon.getDate()}`;
+}
+
+function getWeekDays() {
+  const days = [];
+  const now = new Date();
+  const dow = now.getDay();
+  const diff = now.getDate() - dow;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(diff + i);
+    days.push(d);
+  }
+  return days;
+}
+
+function dateKey(d) { return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+function isToday(d) { return dateKey(d) === getToday(); }
+function isFuture(d) { return d > new Date() && !isToday(d); }
+
+function getState(dk) {
+  if (!state[dk]) state[dk] = { daily: {}, weekly: {} };
+  return state[dk];
+}
+
+function getDailyRetosForDay(d) {
+  const ids = DAILY_ROTATION[d.getDay()];
+  return RETOS_DATA.filter(r => ids.includes(r.id));
+}
+
+function getWeeklyRetos() {
+  return RETOS_DATA.filter(r => r.type === 'weekly');
+}
+
+// Aggregate weekly progress across all days this week
+function getWeeklyProgress(id) {
+  const days = getWeekDays();
+  let total = 0;
+  for (const d of days) {
+    const s = getState(dateKey(d));
+    total += s.weekly[id] || 0;
+  }
+  return total;
+}
+
+function getTotalPoints() {
+  let pts = 0;
+  for (const dk of Object.keys(state)) {
+    const s = state[dk];
+    // daily
+    const d = new Date(...dk.split('-').map((v,i)=>i===1?+v-1:+v));
+    const dailyRetos = getDailyRetosForDay(d);
+    for (const r of dailyRetos) {
+      if ((s.daily[r.id] || 0) >= 1) pts += r.pts;
+    }
+    // weekly (only count once at completion)
+  }
+  // weekly
+  for (const r of getWeeklyRetos()) {
+    const prog = getWeeklyProgress(r.id);
+    if (prog >= r.total) pts += r.pts;
+  }
+  return pts;
+}
+
+function getTodayCompleted() {
+  const s = getState(getToday());
+  const d = new Date();
+  const dailyRetos = getDailyRetosForDay(d);
+  let c = 0;
+  for (const r of dailyRetos) { if ((s.daily[r.id] || 0) >= 1) c++; }
+  return c;
+}
+
+function getStreak() {
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 30; i++) {
+    const dd = new Date(d);
+    dd.setDate(d.getDate() - i);
+    const dk = dateKey(dd);
+    const s = state[dk];
+    if (!s) break;
+    const dailyRetos = getDailyRetosForDay(dd);
+    const anyDone = dailyRetos.some(r => (s.daily[r.id] || 0) >= 1);
+    if (anyDone) streak++;
+    else if (i > 0) break; // gap
+  }
+  return streak;
+}
+
+// ===== RENDER =====
+function renderDaySelector() {
+  const cont = document.getElementById('day-selector');
+  const days = getWeekDays();
+  const names = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  cont.innerHTML = days.map(d => {
+    const dk = dateKey(d);
+    const s = getState(dk);
+    const dailyRetos = getDailyRetosForDay(d);
+    const anyProgress = dailyRetos.some(r => (s.daily[r.id] || 0) > 0);
+    const allDone = dailyRetos.every(r => (s.daily[r.id] || 0) >= 1);
+    const future = isFuture(d);
+    const todayClass = isToday(d) ? 'today' : '';
+    const selectedClass = dk === selectedDateKey ? 'selected' : '';
+    const dotClass = allDone ? 'completed' : anyProgress ? 'has-progress' : '';
+    return `<button class="day-btn ${todayClass} ${selectedClass}" onclick="selectDay('${dk}')" ${future ? 'style="opacity:0.45"' : ''}>
+      <span class="day-name">${names[d.getDay()]}</span>
+      <span class="day-num">${d.getDate()}</span>
+      <span class="day-dot ${dotClass}"></span>
+    </button>`;
+  }).join('');
+}
+
+function selectDay(dk) {
+  selectedDateKey = dk;
+  renderDaySelector();
+  renderRetosContent();
+}
+
+function renderRetosContent() {
+  const cont = document.getElementById('retos-content');
+  const dk = selectedDateKey;
+  const d = new Date(...dk.split('-').map((v,i)=>i===1?+v-1:+v));
+  const past = !isToday(d) && !isFuture(d);
+  const future = isFuture(d);
+  const s = getState(dk);
+
+  const dailyRetos = getDailyRetosForDay(d);
+  const weeklyRetos = getWeeklyRetos();
+
+  let html = '';
+
+  if (past) {
+    html += `<div class="past-day-notice"><span class="ico">📅</span>Estás viendo el historial del ${d.getDate()}/${d.getMonth()+1}. Solo lectura.</div>`;
+  }
+  if (future) {
+    html += `<div class="past-day-notice"><span class="ico">🔮</span>Este día aún no ha llegado. Los retos aparecerán cuando llegue.</div>`;
+  }
+
+  // Daily retos
+  html += `<div class="retos-section-title">⚡ Retos del día</div><div class="retos-grid">`;
+  for (const r of dailyRetos) {
+    const prog = s.daily[r.id] || 0;
+    const done = prog >= 1;
+    const readonly = past || future;
+    html += renderRetoCard(r, prog, 1, done, readonly, 'daily', dk);
+  }
+  html += `</div>`;
+
+  // Weekly retos
+  html += `<div class="retos-section-title">🗓️ Retos semanales</div><div class="retos-grid">`;
+  for (const r of weeklyRetos) {
+    const weekProg = getWeeklyProgress(r.id);
+    const dayContrib = s.weekly[r.id] || 0;
+    const done = weekProg >= r.total;
+    html += renderWeeklyCard(r, weekProg, dayContrib, done, past || future, dk);
+  }
+  html += `</div>`;
+
+  cont.innerHTML = html;
+}
+
+function renderRetoCard(r, prog, total, done, readonly, type, dk) {
+  const pct = Math.min(Math.round((prog / total) * 100), 100);
+  const color = done ? '#4ecca3' : 'rgba(78,204,163,0.4)';
+  return `
+  <div class="reto-card ${done ? 'completed-card' : ''}">
+    <div class="reto-icon-wrap ico-daily">${r.icon}</div>
+    <div class="reto-body">
+      <div class="reto-type type-daily">⚡ RETO DIARIO</div>
+      <h4>${r.title}</h4>
+      <p>${r.desc}</p>
+      <div class="reto-meta">
+        <span class="reto-pts">+${r.pts} pts</span>
+        ${done ? '<span class="reto-progress-text" style="color:var(--green-light)">✓ ¡Completado!</span>' : ''}
+      </div>
+      <div class="reto-bar-track" style="margin-top:8px">
+        <div class="reto-bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+    </div>
+    <div class="reto-right">
+      ${!readonly ? `
+      <div class="step-btns">
+        <button class="step-btn step-minus" onclick="stepReto('${dk}','${r.id}','daily',-1)" ${prog<=0?'disabled':''}>−</button>
+        <span class="step-val" style="color:${done?'var(--green-light)':'var(--text-main)'}">${prog}</span>
+        <button class="step-btn step-plus" onclick="stepReto('${dk}','${r.id}','daily',1)" ${done?'disabled':''}>+</button>
+      </div>
+      <span class="step-total">de ${total}</span>
+      ` : `<span class="step-val" style="color:${done?'var(--green-light)':'var(--text-muted)'}">${prog}/${total}</span>`}
+    </div>
+  </div>`;
+}
+
+function renderWeeklyCard(r, weekProg, dayContrib, done, readonly, dk) {
+  const pct = Math.min(Math.round((weekProg / r.total) * 100), 100);
+  const color = done ? '#4ecca3' : 'var(--blue-accent)';
+
+  // mini dots showing each day's contribution
+  const days = getWeekDays();
+  const dotsHtml = days.map(d => {
+    const ddkk = dateKey(d);
+    const contrib = getState(ddkk).weekly[r.id] || 0;
+    return `<div class="wdot ${contrib>0 ? (done?'done-all':'filled') : ''}"></div>`;
+  }).join('');
+
+  return `
+  <div class="reto-card ${done ? 'completed-card' : ''}">
+    <div class="reto-icon-wrap ico-weekly">${r.icon}</div>
+    <div class="reto-body">
+      <div class="reto-type type-weekly">🗓️ RETO SEMANAL</div>
+      <h4>${r.title}</h4>
+      <p>${r.desc}</p>
+      <div class="reto-meta">
+        <span class="reto-pts">+${r.pts} pts</span>
+        <span class="reto-progress-text">${weekProg}/${r.total} esta semana ${done ? '✓' : ''}</span>
+      </div>
+      <div class="reto-bar-track" style="margin-top:6px">
+        <div class="reto-bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+      <div class="weekly-dots-row">${dotsHtml}</div>
+    </div>
+    <div class="reto-right">
+      ${!readonly ? `
+      <div class="step-btns">
+        <button class="step-btn step-minus" onclick="stepReto('${dk}','${r.id}','weekly',-1)" ${dayContrib<=0?'disabled':''}>−</button>
+        <span class="step-val" style="color:${done?'var(--green-light)':'var(--text-main)'}">${dayContrib}</span>
+        <button class="step-btn step-plus" onclick="stepReto('${dk}','${r.id}','weekly',1)" ${weekProg>=r.total?'disabled':''}>+</button>
+      </div>
+      <span class="step-total">hoy</span>
+      ` : `<span class="step-val" style="color:${done?'var(--green-light)':'var(--text-muted)'}">${dayContrib} hoy</span>`}
+    </div>
+  </div>`;
+}
+
+function stepReto(dk, id, type, delta) {
+  const s = getState(dk);
+  if (type === 'daily') {
+    const r = RETOS_DATA.find(r => r.id === id);
+    const cur = s.daily[id] || 0;
+    s.daily[id] = Math.max(0, Math.min(1, cur + delta));
+  } else {
+    const r = RETOS_DATA.find(r => r.id === id);
+    const weekProg = getWeeklyProgress(id);
+    const cur = s.weekly[id] || 0;
+    if (delta > 0 && weekProg >= r.total) return;
+    s.weekly[id] = Math.max(0, cur + delta);
+  }
+  updateStats();
+  renderDaySelector();
+  renderRetosContent();
+}
+
+function updateStats() {
+  document.getElementById('streak-count').textContent = getStreak();
+  document.getElementById('completed-count').textContent = getTodayCompleted();
+  document.getElementById('points-count').textContent = getTotalPoints();
+}
+function calcFootprint(animate) {
+  const auto = +document.getElementById('sl-auto').value;
+  const vuelos = +document.getElementById('sl-vuelos').value;
+  const carne = +document.getElementById('sl-carne').value;
+  const energia = +document.getElementById('sl-energia').value;
+  const compras = +document.getElementById('sl-compras').value;
+
+  document.getElementById('val-auto').textContent = auto + ' km';
+  document.getElementById('val-vuelos').textContent = vuelos + ' vuelos';
+  document.getElementById('val-carne').textContent = carne + ' comidas';
+  document.getElementById('val-energia').textContent = energia + ' kWh';
+  document.getElementById('val-compras').textContent = compras + ' paquetes';
+
+  const c_auto = (auto * 52 * 0.21) / 1000;
+  const c_vuelos = vuelos * 0.9;
+  const c_carne = (carne * 52 * 3.3) / 1000;
+  const c_energia = (energia * 12 * 0.45) / 1000;
+  const c_compras = (compras * 12 * 0.5) / 1000;
+  const total = c_auto + c_vuelos + c_carne + c_energia + c_compras;
+
+  // Score ring
+  const max = 20; // 20 ton = 100%
+  const pct = Math.min(total / max, 1);
+  const circ = 376;
+  const offset = circ - circ * pct;
+  document.getElementById('mainRing').style.strokeDashoffset = offset;
+  document.getElementById('scoreNum').textContent = total.toFixed(1);
+
+  const badge = document.getElementById('scoreBadge');
+  const ring = document.getElementById('mainRing');
+  if (total < 4) {
+    badge.textContent = '🌟 Eco Warrior'; badge.className = 'score-badge badge-good';
+    ring.className = 'ring-fill green';
+  } else if (total < 9) {
+    badge.textContent = '⚡ En progreso'; badge.className = 'score-badge badge-mid';
+    ring.style.stroke = '#ffc107';
+    ring.className = 'ring-fill';
+  } else {
+    badge.textContent = '🔴 Alta huella'; badge.className = 'score-badge badge-bad';
+    ring.style.stroke = '#ef5350';
+    ring.className = 'ring-fill';
+  }
+
+  // Bars
+  const cats = [
+    { name: '🚗 Transporte auto', val: c_auto, color: 'linear-gradient(90deg,#4ecca3,#29b6f6)' },
+    { name: '✈️ Vuelos', val: c_vuelos, color: 'linear-gradient(90deg,#29b6f6,#1565c0)' },
+    { name: '🥩 Alimentación', val: c_carne, color: 'linear-gradient(90deg,#43a047,#4ecca3)' },
+    { name: '⚡ Energía en hogar', val: c_energia, color: 'linear-gradient(90deg,#ffa726,#ffd54f)' },
+    { name: '🛍️ Compras', val: c_compras, color: 'linear-gradient(90deg,#ab47bc,#7e57c2)' },
+  ];
+  const maxCat = Math.max(...cats.map(c => c.val), 0.01);
+  const cont = document.getElementById('bars-container');
+  cont.innerHTML = cats.map(c => {
+    const pct = ((c.val / total) * 100).toFixed(0) || 0;
+    const w = ((c.val / maxCat) * 100).toFixed(1);
+    return `<div class="bar-item">
+      <div class="bar-meta">
+        <span class="bar-name">${c.name}</span>
+        <span class="bar-pct">${c.val.toFixed(2)} ton · ${pct}%</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${w}%;background:${c.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== TIPS =====
+function renderTips(filter = 'all') {
+  const grid = document.getElementById('tips-grid');
+  const data = filter === 'all' ? TIPS_DATA : TIPS_DATA.filter(t => t.cat === filter);
+  grid.innerHTML = data.map(t => `
+    <div class="tip-card">
+      <span class="tip-icon">${t.icon}</span>
+      <div class="tip-tag">${t.tag}</div>
+      <h4>${t.title}</h4>
+      <p>${t.desc}</p>
+      <div class="tip-impact">${t.impact}</div>
+    </div>
+  `).join('');
+}
+
+function filterTips(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTips(cat);
+}
+
+// ===== NAV =====
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== INIT =====
+calcFootprint();
+renderTips();
+selectedDateKey = getToday();
+updateStats();
+renderDaySelector();
+renderRetosContent();
+</script>
 </body>
 </html>
